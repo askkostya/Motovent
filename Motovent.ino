@@ -1,6 +1,3 @@
-#include <Arduino.h>
-#include "ATtinySerialOut.h"
-
 #include <avr/sleep.h>
 #include <avr/power.h>
 #include <avr/wdt.h>
@@ -45,11 +42,9 @@ void activatesleep ()
 
 
 void setup(void) {
-  initTXPin();
   pinMode(OPTRON_PIN, OUTPUT);
   pinMode(ENGINE_PIN, INPUT_PULLUP);
   digitalWrite(OPTRON_PIN, LOW);
- // wdt_enable(WDTO_8S);
 }
 
 float getAvgTermo()
@@ -76,7 +71,7 @@ uint8_t enginestatus()
   long i;
   int enginestatus = 0;
   for (i = 0; i < 100000; i++) {
-    if (digitalRead(ENGINE_PIN) == 0) //
+    if (digitalRead(ENGINE_PIN) == 0)
     {
       enginestatus = 1;
       break;
@@ -88,9 +83,7 @@ uint8_t enginestatus()
 void loop(void) {
   int isengine;
   float avgTermo;
-  //wdt_reset();
-   write1Start8Data1StopNoParityWithCliSei('\n');
-  
+
   isengine = enginestatus();
   if ( isengine == 0)
   {
@@ -98,13 +91,13 @@ void loop(void) {
     activatesleep();
   }
   avgTermo = getAvgTermo();
-  
+
   //Обрыв термистора
- if (avgTermo == INFINITY)
+  if (avgTermo == INFINITY)
   {
-  avgTermo=30000;
+    avgTermo = 30000;
   }
-   
+
   if (globalPower == 1)
   {
     avgTermo = avgTermo - RESCORRECTION;
@@ -119,5 +112,4 @@ void loop(void) {
     digitalWrite(OPTRON_PIN, LOW);
     globalPower = 0;
   }
-  Serial.print(avgTermo);
 }
